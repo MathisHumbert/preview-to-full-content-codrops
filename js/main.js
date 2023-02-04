@@ -11,26 +11,24 @@ function init() {
   const frames = document.querySelectorAll('.frame');
 
   items.forEach((item, index) => {
-    const button = item.querySelector('.item__enter');
-    const link = item.querySelector('.item__foter__link');
-    const circle = item.querySelector('.item__enter circle');
-    const imgWrapper = item.querySelector('.item__img__wrapper');
-    const img = item.querySelector('.item__img');
-    const heading = item.querySelector('.item__heading');
-    const words = item.querySelectorAll('.item__heading__word');
-    const meta = item.querySelectorAll('.item__meta__row');
-    const footer = item.querySelector('.item__footer');
-    const textFooter = item.querySelector('.item__footer p');
-    const linkFooter = item.querySelector('.item__footer a');
+    const enterButton = item.querySelector('.item__enter');
+    const itemLink = item.querySelector('.item__foter__link');
+    const enterCircle = item.querySelector('.item__enter circle');
+    const itemImgWrapper = item.querySelector('.item__img__wrapper');
+    const itemImg = item.querySelector('.item__img');
+    const itemHeading = item.querySelector('.item__heading');
+    const itemWords = item.querySelectorAll('.item__heading__word');
+    const itemMeta = item.querySelectorAll('.item__meta__row');
+    const itemFooter = item.querySelector('.item__footer');
+    const itemTextFooter = item.querySelector('.item__footer p');
+    const itemLinkFooter = item.querySelector('.item__footer a');
+    const backButton = document.querySelector('.content__back');
     const content = document.getElementById(`content-${index + 1}`);
+    const contentWords = content.querySelectorAll('.content__heading__word');
+    const contentText = content.querySelectorAll('.content__text p');
+    const contentImg = content.querySelector('.content__text img');
 
-    console.log(content);
-
-    let tlHoverOut, tlHoverIn, tlOpen;
-
-    let invertItem = index % 2 !== 0;
-
-    words.forEach((word) => {
+    itemWords.forEach((word) => {
       const firstSpan = new SplitType(word, {
         types: 'chars',
         charClass: 'char__wrap',
@@ -39,20 +37,37 @@ function init() {
       new SplitType(firstSpan.chars, { types: 'chars' });
     });
 
-    const splitTextFooter = new SplitType(textFooter, { types: 'lines' });
+    contentWords.forEach((word) => {
+      const firstSpan = new SplitType(word, {
+        types: 'chars',
+        charClass: 'char__wrap',
+      });
+
+      new SplitType(firstSpan.chars, { types: 'chars' });
+    });
+
+    const splitTextFooter = new SplitType(itemTextFooter, { types: 'lines' });
     wrapLines(splitTextFooter.lines, 'div', 'oh');
 
-    const chars = item.querySelectorAll('.char');
+    const chars = item.querySelectorAll('.item__heading .char');
+    const contentChars = content.querySelectorAll('.content__heading .char');
 
-    button.addEventListener('mouseenter', onItemEnter);
+    let tlHoverOut, tlHoverIn, tlOpen, tlClose;
+    let isContentOpen = false;
 
-    button.addEventListener('mouseleave', onItemLeave);
+    let invertItem = index % 2 !== 0;
 
-    button.addEventListener('click', openContent);
+    enterButton.addEventListener('mouseenter', onItemEnter);
 
-    link.addEventListener('mouseenter', onItemEnter);
+    enterButton.addEventListener('mouseleave', onItemLeave);
 
-    link.addEventListener('mouseleave', onItemLeave);
+    enterButton.addEventListener('click', openContent);
+
+    itemLink.addEventListener('mouseenter', onItemEnter);
+
+    itemLink.addEventListener('mouseleave', onItemLeave);
+
+    backButton.addEventListener('click', closeContent);
 
     // const enterTl = gsap.timeline({
     //   scrollTrigger: {
@@ -63,7 +78,7 @@ function init() {
 
     // enterTl
     //   .fromTo(
-    //     imgWrapper,
+    //     itemImgWrapper,
     //     {
     //       clipPath: 'polygon(0 0,100% 0,100% 0,0 0)',
     //     },
@@ -74,13 +89,13 @@ function init() {
     //     }
     //   )
     //   .fromTo(
-    //     img,
+    //     itemImg,
     //     { scale: 0.9 },
     //     { scale: 1, duration: 1.1, ease: 'power3' },
     //     0
     //   )
     //   .fromTo(
-    //     meta,
+    //     itemMeta,
     //     { opacity: 0 },
     //     { opacity: 1, duration: 0.7, stagger: 0.2, ease: 'power1' },
     //     0.4
@@ -92,7 +107,7 @@ function init() {
     //     0.4
     //   )
     //   .fromTo(
-    //     button,
+    //     enterButton,
     //     { opacity: 0 },
     //     { opacity: 1, duration: 0.2, stagger: 0.2, ease: 'quad.in' },
     //     0.7
@@ -104,7 +119,7 @@ function init() {
     //     0.7
     //   )
     //   .fromTo(
-    //     linkFooter,
+    //     itemLinkFooter,
     //     { opacity: 0 },
     //     { opacity: 1, duration: 0.2, ease: 'power1' },
     //     '-=0.8'
@@ -116,8 +131,12 @@ function init() {
       tlHoverIn = gsap.timeline();
 
       tlHoverIn
-        .to([circle, img], { scale: 1.1, duration: 0.8, ease: 'power3' })
-        .to(imgWrapper, { scale: 0.95, duration: 0.8, ease: 'power3' }, 0)
+        .to([enterCircle, itemImg], {
+          scale: 1.1,
+          duration: 0.8,
+          ease: 'power3',
+        })
+        .to(itemImgWrapper, { scale: 0.95, duration: 0.8, ease: 'power3' }, 0)
         .to(
           chars,
           {
@@ -127,7 +146,7 @@ function init() {
           },
           0
         )
-        .set(heading, { xPercent: invertItem ? 20 : -20 }, 0.2)
+        .set(itemHeading, { xPercent: invertItem ? 20 : -20 }, 0.2)
         .to(
           chars,
           {
@@ -141,13 +160,15 @@ function init() {
     }
 
     function onItemLeave() {
+      if (isContentOpen) return;
+
       if (tlHoverIn) tlHoverIn.kill();
 
       tlHoverOut = gsap.timeline();
 
       tlHoverOut
         .to(
-          [imgWrapper, img, circle],
+          [itemImgWrapper, itemImg, enterCircle],
           { scale: 1, duration: 0.8, ease: 'power3' },
           0
         )
@@ -160,7 +181,7 @@ function init() {
           },
           0
         )
-        .set(heading, { xPercent: 0 }, 0.2)
+        .set(itemHeading, { xPercent: 0 }, 0.2)
         .to(
           chars,
           {
@@ -176,19 +197,20 @@ function init() {
     function openContent() {
       if (tlHoverIn) tlHoverIn.kill();
 
-      // content.classList.add('content__article--open');
-      // document.body.classList.add('oh');
+      content.classList.add('content__article--open');
+      document.body.classList.add('oh');
 
-      // set content
-      // to content
+      isContentOpen = true;
 
       tlOpen = gsap.timeline();
 
-      const buttonRect = button.getBoundingClientRect();
+      const enterButtonRect = enterButton.getBoundingClientRect();
 
-      console.log(winsize, buttonRect);
       tlOpen
-        .set(heading, { xPercent: invertItem ? 20 : -20 }, 0.2)
+        .set(contentChars, { xPercent: invertItem ? -103 : 103 }, 0)
+        .set([contentText, contentImg], { y: 20, opacity: 0 }, 0)
+        // .set(itemHeading, { xPercent: invertItem ? 20 : -20 }, 0.2)
+        .set(backButton, { scale: 0.8, opacity: 0 }, 0)
         .to(
           [frames, [...items].filter((_, i) => index !== i)],
           {
@@ -199,30 +221,33 @@ function init() {
           0
         )
         .to(
-          button,
+          enterButton,
           {
-            x: winsize.width / 2 - buttonRect.left - buttonRect.width / 2,
-            y: -buttonRect.top - buttonRect.height / 2,
+            x:
+              winsize.width / 2 -
+              enterButtonRect.left -
+              enterButtonRect.width / 2,
+            y: -enterButtonRect.top - enterButtonRect.height / 2,
             duration: 0.8,
             ease: 'power2',
           },
           0
         )
         .to(
-          circle,
+          enterCircle,
           {
             scale: 2.3,
             opacity: 0,
             duration: 2,
             ease: 'power2',
             onComplete: () => {
-              gsap.set(button, { x: 0, y: 0 });
+              gsap.set(enterButton, { x: 0, y: 0 });
             },
           },
           0
         )
         .to(
-          [footer, meta],
+          [itemFooter, itemMeta],
           {
             opacity: 0,
             yPercent: (i) => (i ? -100 : -8),
@@ -236,7 +261,7 @@ function init() {
           0
         )
         .to(
-          imgWrapper,
+          itemImgWrapper,
           {
             scale: 0.9,
             opacity: 0,
@@ -254,7 +279,35 @@ function init() {
             ease: 'quad.in',
           },
           0
+        )
+        .to(
+          contentChars,
+          {
+            xPercent: 0,
+            duration: 1.3,
+            ease: 'expo',
+            stagger: invertItem ? -0.03 : 0.03,
+          },
+          0.4
+        )
+        .to(
+          [contentText, contentImg],
+          { y: 0, opacity: 1, duration: 1.3, ease: 'expo', stagger: 0.03 },
+          0.7
+        )
+        .to(
+          backButton,
+          { opacity: 1, scale: 1, duration: 1.3, ease: 'expo' },
+          1
         );
+    }
+
+    function closeContent() {
+      if (tlOpen) tlOpen.kill();
+
+      isContentOpen = false;
+
+      tlClose = gsap.timeline();
     }
   });
 }
