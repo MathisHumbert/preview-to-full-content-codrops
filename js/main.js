@@ -3,6 +3,7 @@ import { ScrollTrigger } from 'gsap/all';
 import SplitType from 'split-type';
 
 import { wrapLines, calcWinsize } from './utils';
+import { magneticButton } from './magneticButton';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -49,13 +50,16 @@ function init() {
     const splitTextFooter = new SplitType(itemTextFooter, { types: 'lines' });
     wrapLines(splitTextFooter.lines, 'div', 'oh');
 
-    const chars = item.querySelectorAll('.item__heading .char');
+    const itemChars = item.querySelectorAll('.item__heading .char');
     const contentChars = content.querySelectorAll('.content__heading .char');
 
     let tlHoverOut, tlHoverIn, tlOpen, tlClose;
     let isContentOpen = false;
+    let isContentEnter = false;
 
     let invertItem = index % 2 !== 0;
+
+    const stopMagneticButton = magneticButton(enterButton);
 
     enterButton.addEventListener('mouseenter', onItemEnter);
 
@@ -69,63 +73,66 @@ function init() {
 
     backButton.addEventListener('click', closeContent);
 
-    // const enterTl = gsap.timeline({
-    //   scrollTrigger: {
-    //     trigger: item,
-    //     start: 'top bottom',
-    //   },
-    // });
+    const enterTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: item,
+        start: 'top bottom',
+      },
+      onComplete: () => (isContentEnter = true),
+    });
 
-    // enterTl
-    //   .fromTo(
-    //     itemImgWrapper,
-    //     {
-    //       clipPath: 'polygon(0 0,100% 0,100% 0,0 0)',
-    //     },
-    //     {
-    //       clipPath: 'polygon(0 0,100% 0,100% 100%,0 100%)',
-    //       duration: 0.8,
-    //       ease: 'power3',
-    //     }
-    //   )
-    //   .fromTo(
-    //     itemImg,
-    //     { scale: 0.9 },
-    //     { scale: 1, duration: 1.1, ease: 'power3' },
-    //     0
-    //   )
-    //   .fromTo(
-    //     itemMeta,
-    //     { opacity: 0 },
-    //     { opacity: 1, duration: 0.7, stagger: 0.2, ease: 'power1' },
-    //     0.4
-    //   )
-    //   .fromTo(
-    //     chars,
-    //     { xPercent: invertItem ? 103 : -103 },
-    //     { xPercent: 0, duration: 0.7, ease: 'expo' },
-    //     0.4
-    //   )
-    //   .fromTo(
-    //     enterButton,
-    //     { opacity: 0 },
-    //     { opacity: 1, duration: 0.2, stagger: 0.2, ease: 'quad.in' },
-    //     0.7
-    //   )
-    //   .fromTo(
-    //     splitTextFooter.lines,
-    //     { yPercent: -105 },
-    //     { yPercent: 0, duration: 0.7, stagger: 0.1, ease: 'power1' },
-    //     0.7
-    //   )
-    //   .fromTo(
-    //     itemLinkFooter,
-    //     { opacity: 0 },
-    //     { opacity: 1, duration: 0.2, ease: 'power1' },
-    //     '-=0.8'
-    //   );
+    enterTl
+      .fromTo(
+        itemImgWrapper,
+        {
+          clipPath: 'polygon(0 0,100% 0,100% 0,0 0)',
+        },
+        {
+          clipPath: 'polygon(0 0,100% 0,100% 100%,0 100%)',
+          duration: 0.8,
+          ease: 'power3',
+        }
+      )
+      .fromTo(
+        itemImg,
+        { scale: 0.9 },
+        { scale: 1, duration: 1.1, ease: 'power3' },
+        0
+      )
+      .fromTo(
+        itemMeta,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.7, stagger: 0.2, ease: 'power1' },
+        0.4
+      )
+      .fromTo(
+        itemChars,
+        { xPercent: invertItem ? 103 : -103 },
+        { xPercent: 0, duration: 0.7, ease: 'expo' },
+        0.4
+      )
+      .fromTo(
+        enterButton,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.2, stagger: 0.2, ease: 'quad.in' },
+        0.7
+      )
+      .fromTo(
+        splitTextFooter.lines,
+        { yPercent: -105 },
+        { yPercent: 0, duration: 0.7, stagger: 0.1, ease: 'power1' },
+        0.7
+      )
+      .fromTo(
+        itemLinkFooter,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.2, ease: 'power1' },
+        '-=0.8'
+      );
 
     function onItemEnter() {
+      if (!isContentEnter) return;
+
       if (tlHoverOut) tlHoverOut.kill();
 
       tlHoverIn = gsap.timeline();
@@ -138,7 +145,7 @@ function init() {
         })
         .to(itemImgWrapper, { scale: 0.95, duration: 0.8, ease: 'power3' }, 0)
         .to(
-          chars,
+          itemChars,
           {
             xPercent: invertItem ? 103 : -103,
             duration: 0.2,
@@ -148,7 +155,7 @@ function init() {
         )
         .set(itemHeading, { xPercent: invertItem ? 20 : -20 }, 0.2)
         .to(
-          chars,
+          itemChars,
           {
             startAt: { xPercent: invertItem ? -103 : 103 },
             xPercent: 0,
@@ -160,20 +167,21 @@ function init() {
     }
 
     function onItemLeave() {
-      if (isContentOpen) return;
+      if (isContentOpen || !isContentEnter) return;
 
       if (tlHoverIn) tlHoverIn.kill();
 
       tlHoverOut = gsap.timeline();
 
       tlHoverOut
+        .to(enterButton, { x: 0, y: 0, duration: 0.8, ease: 'power3' }, 0)
         .to(
           [itemImgWrapper, itemImg, enterCircle],
           { scale: 1, duration: 0.8, ease: 'power3' },
           0
         )
         .to(
-          chars,
+          itemChars,
           {
             xPercent: invertItem ? -103 : 103,
             duration: 0.2,
@@ -183,7 +191,7 @@ function init() {
         )
         .set(itemHeading, { xPercent: 0 }, 0.2)
         .to(
-          chars,
+          itemChars,
           {
             startAt: { xPercent: invertItem ? 103 : -103 },
             xPercent: 0,
@@ -195,6 +203,8 @@ function init() {
     }
 
     function openContent() {
+      stopMagneticButton();
+
       if (tlHoverIn) tlHoverIn.kill();
 
       content.classList.add('content__article--open');
@@ -209,8 +219,8 @@ function init() {
       tlOpen
         .set(contentChars, { xPercent: invertItem ? -103 : 103 }, 0)
         .set([contentText, contentImg], { y: 20, opacity: 0 }, 0)
-        // .set(itemHeading, { xPercent: invertItem ? 20 : -20 }, 0.2)
         .set(backButton, { scale: 0.8, opacity: 0 }, 0)
+        .set(enterButton, { x: 0, y: 0 }, 0)
         .to(
           [frames, [...items].filter((_, i) => index !== i)],
           {
@@ -237,12 +247,10 @@ function init() {
           enterCircle,
           {
             scale: 2.3,
+            transformOrigin: '50% 50%',
             opacity: 0,
             duration: 2,
             ease: 'power2',
-            onComplete: () => {
-              gsap.set(enterButton, { x: 0, y: 0 });
-            },
           },
           0
         )
@@ -271,10 +279,9 @@ function init() {
           0
         )
         .to(
-          chars,
+          itemChars,
           {
             xPercent: invertItem ? 103 : -103,
-            opacity: 0,
             duration: 0.3,
             ease: 'quad.in',
           },
@@ -308,6 +315,83 @@ function init() {
       isContentOpen = false;
 
       tlClose = gsap.timeline();
+
+      tlClose
+        .set(enterButton, { x: 0, y: 0 })
+        .set(enterCircle, { scale: 0.5, opacity: 0 }, 0)
+        .to(
+          backButton,
+          {
+            opacity: 0,
+            scale: 0.9,
+            duration: 0.3,
+            ease: 'quad.in',
+          },
+          0
+        )
+        .to(
+          contentChars,
+          { xPercent: invertItem ? -103 : 103, duration: 0.3, ease: 'quad.in' },
+          0
+        )
+        .to(
+          [contentText, contentImg],
+          {
+            yPercent: 20,
+            opacity: 0,
+            duration: 0.5,
+            ease: 'power4.in',
+          },
+          0
+        )
+        .to(
+          enterCircle,
+          {
+            scale: 1,
+            opacity: 1,
+            ease: 'expo',
+            onComplete: () => {
+              content.classList.remove('content__article--open');
+              document.body.classList.remove('oh');
+            },
+          },
+          0.4
+        )
+        .to(
+          [itemChars, itemHeading],
+          {
+            xPercent: 0,
+            duration: 1.3,
+            ease: 'expo',
+            stagger: invertItem ? 0.01 : -0.01,
+          },
+          0.4
+        )
+        .to(
+          [itemImg, itemImgWrapper],
+          { scale: 1, opacity: 1, duration: 0.8, ease: 'power3' },
+          0.4
+        )
+        .to(
+          [itemFooter, itemMeta],
+          {
+            opacity: 1,
+            yPercent: 0,
+            duration: 1.3,
+            ease: 'expo',
+            stagger: { from: 'center', amount: 0.06 },
+          },
+          0.4
+        )
+        .to(
+          [frames, [...items].filter((_, i) => index !== i)],
+          {
+            opacity: 1,
+            duration: 0.6,
+            ease: 'power3',
+          },
+          0.4
+        );
     }
   });
 }
