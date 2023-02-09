@@ -2,13 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Preview To Content Transition | Codrops</title>
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="https://use.typekit.net/ytb6dpl.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Preview To Content Transition | Codrops</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
   </head>
-  <body>
+  <body class="loading">
     <main>
       <div class="frame frame__header">
         <div class="frame__title__wrapper">
@@ -375,7 +376,7 @@
               achievements of liberty, will not easily find servile letters enow
               to spell such a dictatory presumption English.
             </p>
-            <img src="/1.jpg" alt="img-1" />
+            <img class="content__img" src="/1.jpg" alt="img-1" />
             <p>
               And thus ye have the inventors and the original of book-licensing
               ripped up and drawn as lineally as any pedigree. We have it not,
@@ -442,7 +443,7 @@
               liberty, will not easily find servile letters enow to spell such a
               dictatory presumption English.
             </p>
-            <img src="/2.jpg" alt="img-2" />
+            <img class="content__img" src="/2.jpg" alt="img-2" />
             <p>
               They are not skilful considerers of human things, who imagine to
               remove sin by removing the matter of sin; for, besides that it is
@@ -495,7 +496,7 @@
               liberty, will not easily find servile letters enow to spell such a
               dictatory presumption English.
             </p>
-            <img src="/3.jpg" alt="img-3" />
+            <img class="content__img" src="/3.jpg" alt="img-3" />
             <p>
               Nay, which is more lamentable, if the work of any deceased author,
               though never so famous in his lifetime and even to this day, come
@@ -547,7 +548,7 @@
               liberty, will not easily find servile letters enow to spell such a
               dictatory presumption English.
             </p>
-            <img src="/4.jpg" alt="img-4" />
+            <img class="content__img" src="/4.jpg" alt="img-4" />
             <p>
               And it is a particular disesteem of every knowing person alive,
               and most injurious to the written labours and monuments of the
@@ -616,7 +617,7 @@
               liberty, will not easily find servile letters enow to spell such a
               dictatory presumption English.
             </p>
-            <img src="/5.jpg" alt="img-5" />
+            <img class="content__img" src="/5.jpg" alt="img-5" />
             <p>
               And in conclusion it reflects to the disrepute of our ministers
               also, of whose labours we should hope better, and of the
@@ -670,7 +671,7 @@
               liberty, will not easily find servile letters enow to spell such a
               dictatory presumption English.
             </p>
-            <img src="/6.jpg" alt="img-6" />
+            <img class="content__img" src="/6.jpg" alt="img-6" />
             <p>
               Next, what more national corruption, for which England hears ill
               abroad, than household gluttony: who shall be the rectors of our
@@ -724,6 +725,9 @@
         </p>
       </div>
     </main>
+    <svg class="cursor" width="80" height="80">
+      <circle class="cursor__inner" cx="40" cy="40" r="20" />
+    </svg>
     <script type="module" src="/js/main.js"></script>
   </body>
 </html>

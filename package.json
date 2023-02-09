@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "gsap": "^3.11.4",
+    "imagesloaded": "^5.0.0",
     "split-type": "^0.3.3"
   }
 }

@@ -1,3 +1,5 @@
+import imagesLoaded from 'imagesloaded';
+
 export const wrapLines = (arr, wrapType, wrapClass) => {
   arr.forEach((el) => {
     const wrapEl = document.createElement(wrapType);
@@ -16,3 +18,24 @@ export const getMousePos = (e) => {
 };
 
 export const lerp = (a, b, n) => (1 - n) * a + n * b;
+
+export const preloadImages = (selector = 'img') => {
+  return new Promise((resolve) => {
+    imagesLoaded(
+      document.querySelectorAll(selector),
+      { background: true },
+      resolve
+    );
+  });
+};
+
+export const preloadFonts = (id) => {
+  return new Promise((resolve) => {
+    WebFont.load({
+      typekit: {
+        id: id,
+      },
+      active: resolve,
+    });
+  });
+};
