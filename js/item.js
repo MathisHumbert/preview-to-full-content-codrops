@@ -222,7 +222,7 @@ export default function item() {
 
       tlOpen
         .set(contentChars, { xPercent: invertItem ? -103 : 103 }, 0)
-        .set([contentText, contentImg], { y: 20, opacity: 0 }, 0)
+        .set([contentText, contentImg], { yPercent: 20, opacity: 0 }, 0)
         .set(backButton, { scale: 0.8, opacity: 0 }, 0)
         .set(enterButton, { x: 0, y: 0 }, 0)
         .to(
@@ -303,7 +303,13 @@ export default function item() {
         )
         .to(
           [contentText, contentImg],
-          { y: 0, opacity: 1, duration: 1.3, ease: 'expo', stagger: 0.03 },
+          {
+            yPercent: 0,
+            opacity: 1,
+            duration: 1.3,
+            ease: 'expo',
+            stagger: 0.03,
+          },
           0.7
         )
         .to(
