@@ -58,6 +58,7 @@ main {
   pointer-events: none;
   z-index: 5000;
   will-change: transform, opacity;
+  opacity: 0;
 }
 
 .cursor__inner {
